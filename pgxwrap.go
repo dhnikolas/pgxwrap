@@ -24,7 +24,7 @@ func (w *Wrapper) Query(ctx context.Context, sql string, args ...interface{}) (p
 		span.SetTag("args", args)
 	}
 
-	return w.db.Query(ctx, sql, args)
+	return w.db.Query(ctx, sql, args...)
 }
 
 func (w *Wrapper) QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row {
@@ -34,7 +34,7 @@ func (w *Wrapper) QueryRow(ctx context.Context, sql string, args ...interface{})
 		span.SetTag("args", args)
 	}
 
-	return w.db.QueryRow(ctx, sql, args)
+	return w.db.QueryRow(ctx, sql, args...)
 }
 
 func (w *Wrapper) Exec(ctx context.Context, sql string, args ...interface{}) (pgconn.CommandTag, error) {
@@ -44,7 +44,7 @@ func (w *Wrapper) Exec(ctx context.Context, sql string, args ...interface{}) (pg
 		span.SetTag("args", args)
 	}
 
-	return w.db.Exec(ctx, sql, args)
+	return w.db.Exec(ctx, sql, args...)
 }
 
 func (w *Wrapper) Db() *pgxpool.Pool {
