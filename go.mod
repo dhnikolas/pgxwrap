@@ -1,4 +1,4 @@
-module gitlab.com/k-infro/pgxwrap
+module github.com/dhnikolas/pgxwrap
 
 go 1.15
 

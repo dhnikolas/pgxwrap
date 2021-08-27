@@ -9,11 +9,12 @@ import (
 )
 
 type Wrapper struct {
-	db *pgxpool.Pool
+	primary *pgxpool.Pool
+	replica *pgxpool.Pool
 }
 
-func New(db *pgxpool.Pool) *Wrapper {
-	wrapper := &Wrapper{db: db}
+func New(primary, replica *pgxpool.Pool) *Wrapper {
+	wrapper := &Wrapper{primary: primary, replica: replica}
 	return wrapper
 }
 
@@ -24,7 +25,7 @@ func (w *Wrapper) Query(ctx context.Context, sql string, args ...interface{}) (p
 		span.SetTag("args", args)
 	}
 
-	return w.db.Query(ctx, sql, args...)
+	return w.replica.Query(ctx, sql, args...)
 }
 
 func (w *Wrapper) QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row {
@@ -34,7 +35,7 @@ func (w *Wrapper) QueryRow(ctx context.Context, sql string, args ...interface{})
 		span.SetTag("args", args)
 	}
 
-	return w.db.QueryRow(ctx, sql, args...)
+	return w.replica.QueryRow(ctx, sql, args...)
 }
 
 func (w *Wrapper) Exec(ctx context.Context, sql string, args ...interface{}) (pgconn.CommandTag, error) {
@@ -44,9 +45,13 @@ func (w *Wrapper) Exec(ctx context.Context, sql string, args ...interface{}) (pg
 		span.SetTag("args", args)
 	}
 
-	return w.db.Exec(ctx, sql, args...)
+	return w.primary.Exec(ctx, sql, args...)
 }
 
-func (w *Wrapper) Db() *pgxpool.Pool {
-	return w.db
+func (w *Wrapper) Primary() *pgxpool.Pool {
+	return w.primary
+}
+
+func (w *Wrapper) Replica() *pgxpool.Pool {
+	return w.replica
 }
